@@ -1,0 +1,12 @@
+<div class="commcate-<%= id %>">
+  <blockquote class="heading-blockquote">
+    <h4 class="heading-h4"><%= content %>
+      <button class="btn btn-default category-add-button btn_create_comm_task"
+              data-category_id="<%= id %>"
+              data-category="<%= content %>"
+              data-color="<%= color %>"
+              ng-click="showTaskCreateModal(<%= id %>, '<%= content %>', 3)">+</button>
+    </h4>
+  </blockquote>
+  <div commtask="<%= id %>"></div>
+</div>

@@ -1,0 +1,15 @@
+<div class="monthcate-<%= id %>">
+  <div style="color: <%= color %>">
+    <div class="row month-week-cate-heading">
+      <div class="col-xs-1"><li style="color: <%= color %>;" class="month-cate-heading-li"></li></div>
+      <div class="col-xs-5"><p class="month-cate-heading-p"><%= content %></p></div>
+      <div class="col-xs-1"><button class="btn btn-default category-add-button btn_create_month_task"
+                                    data-category_id="<%= id %>"
+                                    data-category="<%= content %>"
+                                    data-color="<%= color %>"
+                                    ng-click="showTaskCreateModal(<%= id %>, '<%= content %>', 1)">+</button>
+      </div>
+    </div>
+  </div>
+  <div monthtask="<%= id %>"></div>
+</div>

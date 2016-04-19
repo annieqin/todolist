@@ -1,0 +1,28 @@
+<div class="comm-task-block commtask-<%= id %>" style="background-color: <%= color %>">
+    <div class="row">
+      <input type="hidden" value="<%= id %>" class="commtask_id">
+      <div class="col-xs-2 task-checkbox-block">
+        <% if (finish_status == 0) { %>
+        <input type="checkbox" class="task-checkbox" ng-model="confirmed.comm<%= id %>" ng-change="taskdone(<%= id %>, 'comm')">
+        <% } else if (finish_status ==1) { %>
+        <input type="checkbox" class="task-checkbox" ng-model="confirmed.comm<%= id %>" ng-change="taskdone(<%= id %>, 'comm')" ng-checked="true">
+        <% } %>
+      </div>
+      <div class="col-xs-5 task-content-block">
+        <a href="#" editable-text="commtasks[<%= id %>].content"
+                     onbeforesave="edit($data, 'comm', <%= id %>)"
+                     commtaskcontent="<%= id %>">
+                    <%= content %>
+        </a>
+      </div>
+      <div class="col-xs-3">
+        <% if (scheduled_started_at || scheduled_finished_at) { %>
+        <span class="glyphicon glyphicon-time"></span>
+        <% if (scheduled_started_at) { %><%= scheduled_started_at %><% } %>
+        <% if (scheduled_finished_at) { %>- <%= scheduled_finished_at %><% } %>
+        <% } %>
+      </div>
+      <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+      <div class="col-xs-1"><span ng-click="delete_task('comm', <%= id %>)" class="glyphicon glyphicon-trash"></span></div>
+    </div>
+  </div>

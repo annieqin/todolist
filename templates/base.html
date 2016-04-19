@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html ng-app="todolist">
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <script src="{{ static_url('lib/jquery/dist/jquery.min.js') }}"></script>
+  <script src="{{ static_url('lib/angular/angular-1.4.9.js') }}"></script>
+  <script src="{{ static_url('lib/angular/angular-route.min.js') }}"></script>
+  <!--<script src="{{ static_url('lib/angular/ui-bootstrap-0.13.2.js') }}"></script>-->
+  <script src="{{ static_url('lib/angular/ui-bootstrap-0.13.2-tpls.min.js') }}"></script>
+  <!--<script src="{{ static_url('lib/angular/ui-bootstrap-1.1.0.min.js') }}"></script>-->
+  <!--<script src="{{ static_url('lib/angular/ui-bootstrap-tpls-1.1.0.min.js') }}"></script>-->
+  <script src="{{ static_url('lib/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+
+  <script src="{{ static_url('lib/angular/angular-spectrum-colorpicker.js') }}"></script>
+  <script src="{{ static_url('lib/spectrum/spectrum.js') }}"></script>
+
+  <script src="{{ static_url('lib/angular-jquery-timepicker/src/timepickerdirective.min.js')}}"></script>
+  <script src="{{ static_url('lib/jquery-timepicker-jt/jquery.timepicker.min.js')}}"></script>
+  <!--<script src="{{ static_url('lib/bootstrap-ui-datetime-picker/dist/datetime-picker.js') }}"></script>-->
+  <!--<script src="{{ static_url('lib/angular-bootstrap/ui-bootstrap-0.13.2.js') }}"></script>-->
+
+  <script src="{{ static_url('js/controllers.js') }}"></script>
+
+  <link rel="stylesheet" href="{{ static_url('lib/bootstrap/dist/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ static_url('lib/jquery-ui-1.11.4.custom/jquery-ui.css') }}">
+  <link rel="stylesheet" href="{{ static_url('lib/spectrum/spectrum.css') }}">
+  <link rel="stylesheet" href="{{ static_url('lib/angular-xeditable-0.1.8/css/xeditable.css') }}">
+  <link rel="stylesheet" href="{{ static_url('lib/jquery-timepicker-jt/jquery.timepicker.css') }}">
+
+
+  <script src="{{ static_url('lib/underscore/underscore-min.js') }}"></script>
+  <script src="{{ static_url('lib/jquery-ui-1.11.4.custom/jquery-ui.js') }}"></script>
+  <script src="{{ static_url('lib/angular-xeditable-0.1.8/js/xeditable.js') }}"></script>
+
+
+  <style>
+    .navbar-header {
+      float: left;
+      padding-top: 15px;
+      text-align: center;
+      width: 100%;
+    }
+    .navbar-brand {
+      float: none;
+      font-family: cursive;
+      font-size: 30px;
+      text-align: center;
+      /*margin: auto;*/
+      /*position: absolute;*/
+    }
+    .navbar-collapse {
+      float: right;
+      font-weight: 500;
+    }
+    .center {
+      display: table;
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .editable-bstime .editable-input i.icon-chevron-up:before {
+      content: '\e113';
+    }
+    .editable-bstime .editable-input i.icon-chevron-down:before {
+      content: '\e114';
+    }
+    .editable-bstime .editable-input i.icon-chevron-up,
+    .editable-bstime .editable-input i.icon-chevron-down {
+      position: relative;
+      top: 1px;
+      display: inline-block;
+      font-family: 'Glyphicons Halflings';
+      -webkit-font-smoothing: antialiased;
+      font-style: normal;
+      font-weight: normal;
+      line-height: 1;
+    }
+  </style>
+  {% block stylesheet %}{% end %}
+</head>
+<body>
+<div class="container">
+  {% include '_nav.html' %}
+  {% block container %}{% end %}
+</div>
+{% block javascript %}{% end %}
+</body>
+</html>

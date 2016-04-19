@@ -1,0 +1,27 @@
+<div class="temp-task-block temptask-<%= id %>">
+    <div class="row">
+      <input type="hidden" value="<%= id %>" class="temptask_id">
+      <div class="col-xs-2 task-checkbox-block">
+        <input type="checkbox" class="task-checkbox" ng-model="confirmed.temp<%= id %>" ng-change="taskdone(<%= id %>, 'temp')">
+      </div>
+      <div class="col-xs-5 task-content-block">
+        <a href="#" editable-text="temptasks[<%= id %>].content"
+                     onbeforesave="edit($data, 'temp', <%= id %>)"
+                     temptaskcontent="<%= id %>">
+                    <%= content %>
+        </a>
+      </div>
+      <div class="col-xs-3">
+        <% if (scheduled_started_at || scheduled_finished_at) { %>
+        <span class="glyphicon glyphicon-time"></span>
+        <% if (scheduled_started_at) { %><%= scheduled_started_at %><% } %>
+        <% if (scheduled_finished_at) { %>- <%= scheduled_finished_at %><% } %>
+        <% } %>
+      </div>
+      <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+      <div class="col-xs-1">
+        <span ng-click="delete_task('temp', <%= id %>)" class="glyphicon glyphicon-trash" style="cursor: pointer">
+        </span>
+      </div>
+    </div>
+  </div>

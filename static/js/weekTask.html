@@ -1,0 +1,18 @@
+<div class="task-block weektask-<%= id %>">
+  <div class="row">
+    <div class="col-xs-2 task-checkbox-block">
+      <input type="checkbox" class="task-checkbox" ng-model="confirmed.week<%= id %>" ng-change="taskdone(<%= id %>, 'week')">
+    </div>
+    <div class="col-xs-7 task-content-block">
+      <a href="#" editable-text="weektasks[<%= id %>].content"
+                     onbeforesave="edit($data, 'week', <%= id %>)"
+                     weektaskcontent="<%= id %>">
+                    <%= content %>
+      </a>
+    </div>
+    <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+    <div class="col-xs-1">
+      <span ng-click="delete_task('week', <%= id %>)" class="glyphicon glyphicon-trash" style="cursor: pointer"></span>
+    </div>
+  </div>
+</div>

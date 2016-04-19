@@ -1,0 +1,1334 @@
+{% extends 'base.html' %}
+{% block stylesheet %}
+<style>
+  .add-button {
+    /*float: right;*/
+    /*position: relative;*/
+    /*margin-top: -25px;*/
+    /*margin-right: 50px;*/
+    margin-left: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 0 7px;
+    color: #888888;
+    background-color: #ffffff;
+    border-color: #888888;
+    outline: none;
+  }
+  .category-add-button {
+    float: right;
+    margin-left: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 0 7px;
+    color: #888888;
+    background-color: #ffffff;
+    border-color: #888888;
+    outline: none;
+  }
+  .add-button:focus {
+    outline: none;
+  }
+  .add-button:hover {
+    background-color: #ffffff;
+  }
+  .task-button {
+    /*border-color: #c1e2b3;*/
+    padding: 0 7px;
+    margin: 8px 0;
+    width: 100%;
+    outline: none;
+
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    /*-webkit-user-modify: read-write-plaintext-only;*/
+  }
+  .task-button:hover {
+    background-color: #ffffff;
+    border-color: #c1e2b3;
+  }
+  .task-button:focus {
+    outline: none;
+  }
+  .heading-blockquote {
+    width: auto;
+    height: 25px;
+    margin-bottom: 5px;
+  }
+  .month-week-heading-blockquote {
+    width: auto;
+    height: 25px;
+    margin-bottom: 5px;
+  }
+  .heading-h4 {
+    color: #888888;
+    margin: -7px
+  }
+  .comm-task-block {
+    /*background-color: #c1e2b3;*/
+    /*border-color: #c1e2b3;*/
+    font-size: 15px;
+    font-weight: 400;
+    color: #A5A8A8;
+    padding: 2px 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    /*cursor: pointer;*/
+    /*white-space: normal;*/
+  }
+  .temp-task-block {
+    background-color: #DEFCFC ;
+    font-size: 15px;
+    font-weight: 400;
+    color: #A5A8A8;
+    padding: 2px 20px;
+    margin: 5px 0;
+  }
+  .month-task-block {
+    font-size: 15px;
+    font-weight: 400;
+    color: #A5A8A8;
+    padding: 2px 20px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+  .week-task-block {
+    font-size: 15px;
+    font-weight: 400;
+    color: #A5A8A8;
+    padding: 2px 20px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    /*margin: 5px 0;*/
+  }
+  .task-checkbox-block {
+    padding-left: 20px;
+    width: 10%;
+    min-width: 20px;
+  }
+  .task-checkbox {
+    width: 20px;
+    height: 20px;
+    background-color: #faf8f6;
+    display: inline-block;
+    cursor: pointer;
+    margin-right: 20px;
+    box-shadow: inset 0 0 0 1px #ffffff;
+  }
+  .task-content-block {
+    margin: auto;
+    text-align: left;
+    color: #888888;
+  }
+  .month-cate-heading-li {
+    font-size: 40px;
+    margin-top: -20px;
+  }
+  .month-cate-heading-p {
+    margin-top: -5px;
+    font-size: 20px;
+  }
+  .month-week-cate-heading {
+    /*margin-bottom: -10px; 如果加上此行会出现每个类别依次缩进*/
+    margin-top: 5px;
+  }
+  .date-select{
+    margin-left: 2px;
+    cursor: pointer;
+
+  }
+</style>
+{% end %}
+
+{% block container %}
+{% from main import TemporaryTask, CommonTask, MonthTask, Category, CommonTaskFrequency %}
+<script type="text/ng-template" id="commtasksjson">
+  {{commtasks_json}}
+</script>
+<script type="text/ng-template" id="temptasksjson">
+  {{temptasks_json}}
+</script>
+<script type="text/ng-template" id="monthtasksjson">
+  {{monthtasks_json}}
+</script>
+<script type="text/ng-template" id="weektasksjson">
+  {{weektasks_json}}
+</script>
+<script>
+  var commtasks = JSON.parse($('#commtasksjson').html().replace(/&quot;/g,'"'));
+  var temptasks = JSON.parse($('#temptasksjson').html().replace(/&quot;/g,'"'));
+  var monthtasks = JSON.parse($('#monthtasksjson').html().replace(/&quot;/g,'"'));
+  var weektasks = JSON.parse($('#weektasksjson').html().replace(/&quot;/g,'"'));
+</script>
+<div class="container" ng-controller="TaskCtrl">
+  <div class="row">
+    <div class="col-xs-4">
+      <div class="monthtasks">
+        <div>
+          <h3 class="text-muted">{{ year }} {{ month }}
+            <input type="hidden" class="current_year" value="{{ year }}">
+            <input type="hidden" class="current_month" value="{{ month_num }}">
+          </h3>
+          <blockquote class="month-week-heading-blockquote">
+            <h4 class="heading-h4">Month Task
+              <button class="btn btn-default add-button btn_create_month_category"
+                      data-level="{{ Category.MONTH }}"
+                      ng-click="showCategoryCreateModal({{Category.MONTH}})">+</button>
+            </h4>
+          </blockquote>
+        </div>
+        <div class="panel panel-default" style="border-color: #c7ddef; height: 200px">
+          <div class="panel-body month-task-block">
+            {% for c in categories %}
+            {% if c.level == 1 %}
+            <div class="monthcate-{{ c.id }}">
+              <div style="color: {{c.color}}">
+                <div class="row month-week-cate-heading">
+                  <div class="col-xs-1"><li class="month-cate-heading-li" style="color: {{c.color}}"></li></div>
+                  <div class="col-xs-5"><p class="month-cate-heading-p">{{ c.content }}</p></div>
+                  <div class="col-xs-1"><button class="btn btn-default category-add-button btn_create_month_task"
+                                                data-category_id="{{ c.id }}"
+                                                data-category="{{ c.content }}"
+                                                data-color="{{ c.color }}"
+                                                ng-click="showTaskCreateModal({{c.id}}, '{{c.content}}', 1)">+</button>
+                  </div>
+                </div>
+              </div>
+              {% for m in monthtasks[c.id] %}
+              <div class="task-block monthtask-{{ m['id'] }}">
+                <div class="row">
+                  <input type="hidden" value="{{ m['id'] }}" class="monthtask_id">
+                  <div class="col-xs-2 task-checkbox-block">
+                    {% if m['status'] == 1 %}
+                    <input type="checkbox" class="task-checkbox" ng-model="confirmed.month{{m['id']}}" ng-change="taskdone({{ m['id'] }}, 'month')" ng-checked="true">
+                    {% elif m['status'] == 0 %}
+                    <input type="checkbox" class="task-checkbox" ng-model="confirmed.month{{m['id']}}" ng-change="taskdone({{ m['id'] }}, 'month')">
+                    {% end %}
+                  </div>
+                  <div class="col-xs-7 task-content-block">
+                    <a href="#" editable-text="monthtasks[{{m['id']}}].content"
+                     onbeforesave="edit_task_content($data, 'month', {{m['id']}})"
+                     monthtaskcontent="{{m['id']}}">
+                    {{ m['content'] }}
+                    </a>
+                  </div>
+                  <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+                  <div class="col-xs-1">
+                    <span ng-click="delete_task('month', {{m['id']}})" class="glyphicon glyphicon-trash" style="cursor: pointer">
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {% end %}
+              <div monthtask="{{c.id}}"></div>
+            </div>
+            {% end %}
+            {% end %}
+            <div monthcate></div>
+          </div>
+        </div>
+      </div>
+      <div class="weektasks">
+        <div>
+          <h3 class="text-muted">{{ week }} week
+            <input type="hidden" class="current_week" value="{{ week_num }}">
+          </h3>
+          <blockquote class="month-week-heading-blockquote">
+            <h4 class="heading-h4">Week Task</h4>
+          </blockquote>
+        </div>
+        <div class="panel panel-default" style="border-color: #c7ddef; height: 200px">
+          <div class="panel-body week-task-block" >
+            {% for c in categories %}
+            {% if c.level in [1, 2] %}
+            <div class="weekcate-{{ c.id }}">
+              <div style="color: {{c.color}};">
+                <div class="row month-week-cate-heading">
+                  <div class="col-xs-1"><li style="color: {{c.color}};" class="month-cate-heading-li"></li></div>
+                  <div class="col-xs-5"><p class="month-cate-heading-p">{{ c.content }}</p></div>
+                  <div class="col-xs-1"><button class="btn btn-default category-add-button btn_create_week_task"
+                                                data-category_id="{{ c.id }}"
+                                                data-category="{{ c.content }}"
+                                                data-color="{{ c.color }}"
+                                                ng-click="showTaskCreateModal({{c.id}}, '{{c.content}}', 2)">+</button>
+                  </div>
+                </div>
+              </div>
+              {% for w in weektasks[c.id] %}
+              <div class="task-block weektask-{{ w['id'] }}">
+                <div class="row">
+                  <input type="hidden" value="{{ w['id'] }}" class="weektask_id">
+                  <div class="col-xs-2 task-checkbox-block">
+                    {% if w['status'] == 1 %}
+                    <input type="checkbox" class="task-checkbox" ng-model="confirmed.week{{w['id']}}" ng-change="taskdone({{ w['id'] }}, 'week')" ng-checked="true">
+                    {% elif w['status'] == 0 %}
+                    <input type="checkbox" class="task-checkbox" ng-model="confirmed.week{{w['id']}}" ng-change="taskdone({{ w['id'] }}, 'week')">
+                    {% end %}
+                  </div>
+                  <div class="col-xs-7 task-content-block">
+                    <a href="#" editable-text="weektasks[{{w['id']}}].content"
+                     onbeforesave="edit_task_content($data, 'week', {{w['id']}})"
+                     weektaskcontent="{{w['id']}}">
+                    {{w['content']}}
+                  </a>
+                  </div>
+                  <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+                  <div class="col-xs-1">
+                    <span ng-click="delete_task('week', {{w['id']}})" class="glyphicon glyphicon-trash" style="cursor: pointer">
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {% end %}
+              <div weektask="{{c.id}}"></div>
+            </div>
+            {% end %}
+            {% end %}
+            <div weekcate></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-8">
+      <div class="temptasks">
+        <h3 class="text-muted">{{ day }}  {{ weekday }}
+          <input type="hidden" class="current_day" value="{{ day_num }}">
+          <input type="hidden" class="current_weekday" value="{{ weekday_num }}">
+
+          <span class="glyphicon glyphicon-calendar date-select"
+                  ng-click="open()" style="cursor: pointer"></span>
+          <input type="hidden" datepicker-popup="yyyy-MM-dd" is-open="popup.opened" datepicker-options="dateOptions"
+                  ng-model="date">
+          <div class="date-picker"> </div>
+        </h3>
+        <h4 class="center" style="color: #888888; margin-bottom: 20px;">Temporary Task
+          <button class="btn btn-default add-button btn_create_temp"
+                  ng-click="showTaskCreateModal('','',4)">+</button>
+        </h4>
+        <div class="temptasks_block">
+          {% for i in temptasks %}
+          <div class="temp-task-block temptask-{{i.id}}" style="background-color: #DEFCFC;">
+            <div class="row temptask-{{ i.id }}">
+              <input type="hidden" value="{{ i.id }}" class="temptask_id">
+              <div class="col-xs-2 task-checkbox-block">
+                {% if i.status == 1 %}
+                <input type="checkbox" class="task-checkbox" ng-model="confirmed.temp{{i.id}}" ng-change="taskdone({{ i.id }}, 'temp')" ng-checked="true">
+                {% elif i.status == 0 %}
+                <input type="checkbox" class="task-checkbox" ng-model="confirmed.temp{{i.id}}" ng-change="taskdone({{ i.id }}, 'temp')">
+                {% end %}
+              </div>
+              <div class="col-xs-5 task-content-block">
+                <a href="#" editable-text="temptasks[{{i.id}}].content"
+                     onbeforesave="edit_task_content($data, 'temp', {{i.id}})"
+                     temptaskcontent="{{i.id}}"
+                          >
+                    {{ i.content }}
+                  </a>
+                </div>
+              <div class="col-xs-3">
+                {% if i.scheduled_started_at %}<span class="glyphicon glyphicon-time"></span>
+                {% if i.scheduled_started_at %}
+                {{ i.scheduled_started_at }}
+                {% end %}
+                {% if i.scheduled_finished_at %}
+                - {{ i.scheduled_finished_at }}
+                {% end %}
+                {% end %}
+              </div>
+              <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+              <div class="col-xs-1">
+                <span ng-click="delete_task('temp', {{i.id}})" class="glyphicon glyphicon-trash" style="cursor: pointer">
+                </span>
+              </div>
+            </div>
+          </div>
+          {% end %}
+          <div temptask></div>
+        </div>
+      </div>
+
+      <div class="commtasks">
+        <h4 class="center" style="color: #888888;">Routine Task</h4>
+        <div class="commtasks_block">
+          {% for i in categories %}
+          <div class="commcate-{{ i.id }}">
+            <blockquote class="heading-blockquote">
+              <h4 class="heading-h4">{{ i.content }}
+                <button class="btn btn-default category-add-button btn_create_comm_task"
+                        data-category_id="{{ i.id }}"
+                        data-category="{{ i.content }}"
+                        data-color="{{ i.color }}"
+                        ng-click="showTaskCreateModal({{i.id}}, '{{i.content}}', 3)">+</button>
+              </h4>
+            </blockquote>
+            {% for c in commtasks[i.id] %}
+            <div class="comm-task-block commtask-{{ c['id'] }}" style="background-color: {{ i.color }}">
+              <div class="row">
+                <input type="hidden" value="{{ c['id'] }}" class="commtask_id">
+                <div class="col-xs-2 task-checkbox-block">
+                  {% if c['finish_status'] == 1 %}
+                  <input type="checkbox" class="task-checkbox" ng-model="confirmed.comm{{c['id']}}" ng-change="taskdone({{ c['id'] }}, 'comm')" ng-checked="true">
+                  {% elif c['finish_status'] == 0 %}
+                  <input type="checkbox" class="task-checkbox" ng-model="confirmed.comm{{c['id']}}" ng-change="taskdone({{ c['id'] }}, 'comm')">
+                  {% end %}
+                </div>
+                <div class="col-xs-5 task-content-block">
+                  <a href="#" editable-text="commtasks[{{c['id']}}].content"
+                     onbeforesave="edit_task_content($data, 'comm', {{c['id']}})"
+                     commtaskcontent="{{c['id']}}">
+                    {{c['content']}}
+                  </a>
+                </div>
+                <div class="col-xs-3">
+                  {% if c['scheduled_started_at'] or c['scheduled_finished_at'] %}
+                  <span class="glyphicon glyphicon-time"></span>
+                  {% if c['scheduled_started_at'] %}
+                    {{ c['scheduled_started_at'] }}
+                  {% end %}
+                  {% if c['scheduled_finished_at'] %}-
+                    {{ c['scheduled_finished_at'] }}
+                  {% end %}
+                  {% end %}
+                </div>
+                <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+                <div class="col-xs-1">
+                  <span ng-click="delete_task('comm', {{c['id']}})" class="glyphicon glyphicon-trash" style="cursor: pointer">
+                  </span>
+                </div>
+              </div>
+            </div>
+            {% end %}
+            <div commtask="{{i.id}}"></div>
+          </div>
+          {% end %}
+          <div commcate></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-------------------新增类别弹窗(angular)------------------->
+<script type="text/ng-template" id="createCategory.html">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true" ng-click="cancel()">X</span>
+    </button>
+    <h4 class="modal-title">新增任务类别</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label class="control-label">任务类别：
+        <input type="hidden" class="level" ng-model="category.level">
+        <!--<input type="hidden" class="id" ng-model="category.id">-->
+        <!--<input type="hidden" class="newCate" ng-model="category.newCate">-->
+        <input type="text" name="content" class="content" ng-model="category.content">
+        <spectrum-colorpicker
+                ng-model="category.color"
+                format="'hex'"
+                on-change="onChange(color)"
+                options="{
+                  showInput: true,
+                  showAlpha: true,
+                  allowEmpty: true,
+                  showPalette: true,
+                  palette: [['#ffffff', '#000000', '#111111'],['#ffffff', '#ffffff', '#ffffff']],
+        }">
+        </spectrum-colorpicker>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary save_cate_create" data-dismiss="modal" ng-click="ok()">保存</button>
+    </div>
+  </div>
+</script>
+
+<!--------------------新增月任务弹窗(angular)----------------->
+<script type="text/ng-template" id="monthtaskCreate.html">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true" ng-click="cancel()">X</span>
+    </button>
+    <h4 class="modal-title">新增{{!task.category_content}}任务</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label class="control-label">任务内容：
+        <input type="hidden" class="category_id">
+        <input type="text" name="content" class="content" ng-model="task.content">
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="control-label">可见范围：
+        <input type="radio" class="visible_range" value="{{ TemporaryTask.PRIVATE }}" ng-model="task.visible_range">仅自己可见
+        <input type="radio" class="visible_range" value="{{ TemporaryTask.PUBLIC }}" ng-model="task.visible_range">好友可见
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary save_month_task_create" data-dismiss="modal" ng-click="ok()">保存</button>
+    </div>
+  </div>
+</script>
+
+<!------------------------新增常规任务弹窗(angular)-------------------->
+<script type="text/ng-template" id="commtaskCreate.html">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true" ng-click="cancel()">X</span>
+    </button>
+    <h4 class="modal-title">新增{{!task.category_content}}任务</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label class="control-label">任务内容：
+        <input type="hidden" name="category_id" class="category_id">
+        <input type="hidden" name="color" class="color">
+        <input type="text" class="content" ng-model="task.content">
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="control-label">可见范围：
+        <input type="radio" ng-model="task.visible_range" class="visible_range" value="{{ TemporaryTask.PRIVATE}}">仅自己可见
+        <input type="radio" ng-model="task.visible_range" class="visible_range" value="{{ TemporaryTask.PUBLIC}}">好友可见
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="control-label">执行频率：
+        <input type="checkbox" ng-model="task.frequency[0]" value="{{CommonTaskFrequency.EVERYDAY}}">每天
+        <input type="checkbox" ng-model="task.frequency[1]" value="{{CommonTaskFrequency.MONDAY}}">每周一
+        <input type="checkbox" ng-model="task.frequency[2]" value="{{CommonTaskFrequency.TUESDAY}}">每周二
+        <input type="checkbox" ng-model="task.frequency[3]" value="{{CommonTaskFrequency.WEDNESDAY}}">每周三
+        <input type="checkbox" ng-model="task.frequency[4]" value="{{CommonTaskFrequency.THURSDAY}}">每周四
+        <input type="checkbox" ng-model="task.frequency[5]" value="{{CommonTaskFrequency.FRIDAY}}">每周五
+        <input type="checkbox" ng-model="task.frequency[6]" value="{{CommonTaskFrequency.SATURDAY}}">每周六
+        <input type="checkbox" ng-model="task.frequency[7]" value="{{CommonTaskFrequency.SUNDAY}}">每周日
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="control-label">每日执行时间：
+        <input type="text" ng-model="task.scheduled_started_at"  ui-timepicker> -
+        <input type="text" ng-model="task.scheduled_finished_at"  ui-timepicker>
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="control-label">计划开始时间：
+        <input type="text" ng-model="task.started_date" datepicker-popup
+                is-open="popup1.opened" datepicker-options="dateOptions">
+        <span class="glyphicon glyphicon-calendar" ng-click="open1()" style="cursor: pointer"></span>
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="control-label">计划结束时间：
+        <input type="text" ng-model="task.finished_date" datepicker-popup
+                is-open="popup2.opened" datepicker-options="dateOptions">
+        <span class="glyphicon glyphicon-calendar" ng-click="open2()" style="cursor: pointer"></span>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary save_comm_task_create" data-dismiss="modal" ng-click="ok()">保存</button>
+    </div>
+  </div>
+  </script>
+
+  <!------------------------新增临时任务弹窗(angular)------------------------>
+  <script type="text/ng-template" id="temptaskCreate.html">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true" ng-click="cancel()">X</span>
+      </button>
+      <h4 class="modal-title">新增今日临时任务</h4>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="control-label">任务内容：
+          <input type="text" class="content" ng-model="task.content">
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="control-label">可见范围：
+          <input type="radio" class="visible_range" ng-model="task.visible_range" value="{{ TemporaryTask.PRIVATE}}">仅自己可见
+          <input type="radio" class="visible_range" ng-model="task.visible_range" value="{{ TemporaryTask.PUBLIC}}">好友可见
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="control-label">计划开始时间：
+          <input type="text" class="scheduled_started_at" ng-model="task.scheduled_started_at">
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="control-label">计划结束时间：
+          <input type="text" class="scheduled_finished_at" ng-model="task.scheduled_finished_at">
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary save_temp_task_create" data-dismiss="modal"
+                ng-click="ok()">保存</button>
+      </div>
+    </div>
+    </script>
+
+    <!--------------------月任务模版(angular)---------------------->
+
+
+    <!------------------月类别模版------------------------->
+    <script type="text/ng-template" id="monthCategory.html">
+      <div class="monthcate-{{!category.id }}">
+        <div style="color: {{!category.color }}">
+          <div class="row month-week-cate-heading">
+            <div class="col-xs-1"><li style="color: {{!category.color }};" class="month-cate-heading-li"></li></div>
+            <div class="col-xs-5"><p class="month-cate-heading-p">{{!category.content }}</p></div>
+            <div class="col-xs-1"><button class="btn btn-default category-add-button btn_create_month_task"
+
+                                          data-category_id="{{!category.id }}"
+                                          data-category="{{!category.content }}"
+                                          data-color="{{!category.color }}">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+</script>
+
+
+<!---------------------新增周任务（已知类别）弹窗---------------->
+<div id="week_task_create" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">X</span>
+        </button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="control-label">任务内容：
+            <input type="hidden" class="category_id">
+            <input type="text" name="content" class="content">
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="control-label">可见范围：
+            <input type="radio" name="visible_range" class="visible_range" value="{{ TemporaryTask.PRIVATE}}">仅自己可见
+            <input type="radio" name="visible_range" class="visible_range" value="{{ TemporaryTask.PUBLIC}}">好友可见
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary save_week_task_create" data-dismiss="modal">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-------------新增类别弹窗-------------->
+<div id="cate_create" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">X</span>
+        </button>
+        <h4 class="modal-title">新增任务类别</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="control-label">任务类别：
+            <input type="hidden" class="level">
+            <input type="text" name="category" class="category">
+            <input type="text" class="color-picker" name="color">
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary save_cate_create" data-dismiss="modal">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% end %}
+
+{% block javascript %}
+
+
+<!--------------------临时任务模版-------------------->
+<script id="temptask_template" type="template">
+  <div class="temp-task-block">
+    <div class="row">
+      <input type="hidden" value="<%= temptask_id %>" class="temptask_id">
+      <div class="col-xs-2 task-checkbox-block"><input type="checkbox" class="task-checkbox"></div>
+      <div class="col-xs-5 task-content-block"><%= content %></div>
+      <div class="col-xs-3">
+        <% if (scheduled_started_at || scheduled_finished_at) { %>
+        <span class="glyphicon glyphicon-time"></span>
+        <% if (scheduled_started_at) { %><%= scheduled_started_at %><% } %>
+        <% if (scheduled_finished_at) { %>- <%= scheduled_finished_at %><% } %>
+        <% } %>
+      </div>
+      <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+      <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
+    </div>
+  </div>
+</script>
+
+<!-------------------常规任务模版---------------------->
+<script id="commtask_template" type="template">
+  <div class="comm-task-block commtask-<%= id %>" style="background-color: <%= color %>">
+    <div class="row">
+      <input type="hidden" value="<%= id %>" class="commtask_id">
+      <div class="col-xs-2 task-checkbox-block">
+        <% if (finish_status == 0) { %>
+        <input type="checkbox" class="task-checkbox">
+        <% } else if (finish_status ==1) { %>
+        <input type="checkbox" class="task-checkbox" checked="true">
+        <% } %>
+      </div>
+      <div class="col-xs-5 task-content-block"><%= content %></div>
+      <div class="col-xs-3">
+        <% if (scheduled_started_at || scheduled_finished_at) { %>
+        <span class="glyphicon glyphicon-time"></span>
+        <% if (scheduled_started_at) { %><%= scheduled_started_at %><% } %>
+        <% if (scheduled_finished_at) { %>- <%= scheduled_finished_at %><% } %>
+        <% } %>
+      </div>
+      <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+      <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
+    </div>
+  </div>
+</script>
+
+<!-------------------周任务模版------------------------>
+<script id="weektask_template" type="template">
+  <div class="task-block weektask-<%= id %>">
+    <div class="row">
+      <div class="col-xs-2 task-checkbox-block"><input type="checkbox" class="task-checkbox"></div>
+      <div class="col-xs-7 task-content-block"><%= content %></div>
+      <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+      <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
+    </div>
+  </div>
+</script>
+
+<!------------------周类别模版------------------------>
+<script id="week-cate-template" type="template">
+  <div class="weekcate-<%= category_id %>">
+    <div style="color: <%= color %>">
+      <div class="row month-week-cate-heading">
+        <div class="col-xs-1"><li style="color: <%= color %>;" class="month-cate-heading-li"></li></div>
+        <div class="col-xs-5"><p class="month-cate-heading-p"><%= category %></p></div>
+        <div class="col-xs-1"><button class="btn btn-default category-add-button btn_create_week_task"
+                                      data-category_id="<%= category_id %>"
+                                      data-category="<%= category %>"
+                                      data-color="<%= color %>">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<!-------------------常规类别模版--------------------->
+<script id="comm-cate-template" type="template">
+  <div class="commcate-<%= category_id %>">
+    <blockquote class="heading-blockquote">
+      <h4 class="heading-h4"><%= category %>
+        <button class="btn btn-default category-add-button btn_create_comm_task"
+                data-category_id="<%= category_id %>"
+                data-category="<%= category %>"
+                data-color="<%= color %>">+</button>
+      </h4>
+    </blockquote>
+  </div>
+</script>
+
+<!---------------月任务块模版------------------------->
+<script id="monthtasks_template" type="template">
+  <div class="panel body month-task-block">
+    <% _.each(categories, function(c) { %>
+    <% if (c['level'] == 1) { %>
+    <div class="monthcate-<%= c['id'] %>">
+      <div style="color: <%= c['color'] %>">
+        <div class="row month-week-cate-heading">
+          <div class="col-xs-1"><li class="month-cate-heading-li" style="color: <%= c['color'] %>"></li></div>
+          <div class="col-xs-5"><p class="month-cate-heading-p"><%= c['content'] %></p></div>
+          <div class="col-xs-1"><button class="btn btn-default category-add-button btn_create_month_task"
+                                        data-category_id="<%= c['id'] %>"
+                                        data-category="<%= c['content'] %>"
+                                        data-color="<%= c['color'] %>">+</button>
+          </div>
+        </div>
+      </div>
+      <% _.each(monthtasks[c['id']], function(m) { %>
+      <div class="task-block monthtask-<%= m['id'] %>">
+        <div class="row">
+          <input type="hidden" value="<%= m['id'] %>" class="monthtask_id">
+          <div class="col-xs-2 task-checkbox-block">
+            <% if (m['status'] == 1) { %>
+            <input type="checkbox" class="task-checkbox" checked="true">
+            <% } %>
+            <% if (m['status'] == 0) { %>
+            <input type="checkbox" class="task-checkbox">
+            <% } %>
+          </div>
+          <div class="col-xs-7 task-content-block"><%= m['content'] %></div>
+          <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+          <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% } %>
+    <% }); %>
+  </div>
+</script>
+
+<!---------------------周任务块模版----------------->
+<script id="weektasks_template" type="template">
+  <div class="panel-body week-task-block" >
+    <% _.each(categories, function(c) { %>
+    <% if (c['level'] == 1 || c['level'] == 2) { %>
+    <div class="weekcate-<%= c['id'] %>">
+      <div style="color: <%= c['color'] %>;">
+        <div class="row month-week-cate-heading">
+          <div class="col-xs-1"><li style="color: <%= c['color'] %>;" class="month-cate-heading-li"></li></div>
+          <div class="col-xs-5"><p class="month-cate-heading-p"><%= c['content'] %></p></div>
+          <div class="col-xs-1"><button class="btn btn-default category-add-button btn_create_week_task"
+                                        data-category_id="<%= c['id'] %>"
+                                        data-category="<%= c['content'] %>"
+                                        data-color="<%= c['color'] %>">+</button>
+          </div>
+        </div>
+      </div>
+      <% _.each(weektasks[c['id']], function(w) { %>
+      <div class="task-block weektask-<%= w['id'] %>">
+        <div class="row">
+          <input type="hidden" value="<%= w['id'] %>" class="weektask_id">
+          <div class="col-xs-2 task-checkbox-block">
+            <% if (w['status'] == 1) { %>
+            <input type="checkbox" class="task-checkbox" checked="true">
+            <% } %>
+            <% if (w['status'] == 0) { %>
+            <input type="checkbox" class="task-checkbox">
+            <% } %>
+          </div>
+          <div class="col-xs-7 task-content-block"><%= w['content'] %></div>
+          <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+          <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% } %>
+    <% }); %>
+  </div>
+</script>
+
+<!----------------------临时任务块模版------------------>
+<script id="temptasks_template" type="template">
+  <div class="temptasks_block">
+    <% _.each(temptasks, function(t) { %>
+    <div class="temp-task-block" style="background-color: #DEFCFC;">
+      <div class="row temptask-<%= t['id'] %>">
+        <input type="hidden" value="<%= t['id'] %>" class="temptask_id">
+        <div class="col-xs-2 task-checkbox-block">
+          <% if (t['status'] == 1) { %>
+          <input type="checkbox" class="task-checkbox" checked="true">
+          <% } else if (t['status'] == 0) { %>
+          <input type="checkbox" class="task-checkbox">
+          <% } %>
+        </div>
+        <div class="col-xs-5 task-content-block"><%= t['content'] %></div>
+        <div class="col-xs-3">
+          <% if (t['scheduled_started_at']) { %><span class="glyphicon glyphicon-time"></span>
+          <% if (t['scheduled_started_at']) { %>
+          <%= t['scheduled_started_at'] %>
+          <% } %>
+          <% if (t['scheduled_finished_at']) { %>
+          - <%= t['scheduled_finished_at'] %>
+          <% } %>
+          <% } %>
+        </div>
+        <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+        <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+</script>
+
+<!--<-------------------常规任务块模版------------------&ndash;&gt;&ndash;&gt;-->
+<script id="commtasks_template" type="template">
+  <div class="commtasks_block">
+    <% _.each(categories, function(c) { %>
+    <div class="commcate-<%= c['id'] %>">
+      <blockquote class="heading-blockquote">
+        <h4 class="heading-h4"><%= c['content'] %>
+          <button class="btn btn-default category-add-button btn_create_comm_task"
+                  data-category_id="<%= c['id'] %>"
+                  data-category="<%= c['content'] %>"
+                  data-color="<%= c['color'] %>">+</button>
+        </h4>
+      </blockquote>
+      <% _.each(commtasks[c['id']], function(i) { %>
+      <div class="comm-task-block commtask-<%= i['id'] %>" style="background-color: <%= c['color'] %>">
+        <div class="row">
+          <input type="hidden" value="<%= i['id'] %>" class="commtask_id">
+          <div class="col-xs-2 task-checkbox-block">
+            <% if (i['finish_status'] == 0) { %>
+            <input type="checkbox" class="task-checkbox">
+            <% } else if (i['finish_status'] ==1) { %>
+            <input type="checkbox" class="task-checkbox" checked="true">
+            <% } %>
+          </div>
+          <div class="col-xs-5 task-content-block"><%= i['content'] %></div>
+          <div class="col-xs-3">
+            <% if (i['scheduled_started_at'] || i['scheduled_finished_at']) { %>
+            <span class="glyphicon glyphicon-time"></span>
+            <% if (i['scheduled_started_at']) { %><%= i['scheduled_started_at'] %><% } %>
+            <% if (i['scheduled_finished_at']) { %>- <%= i['scheduled_finished_at'] %><% } %>
+            <% } %>
+          </div>
+          <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+          <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% }); %>
+  </div>
+</script>
+
+<script>
+  $(document).ready(function() {
+    $('[data-toggle=tooltip]').tooltip();
+    $('.color-picker').spectrum({
+      showPalette: true,
+      preferredFormat: "hex",
+      showInput: true,
+      showInitial: true,
+      palette: [
+        ["#d0ed7a", "#badea7", "#ffc1c1", "#dab5ff", "#aee6d1"],
+        ["#afdef8", "#fcb8d7", "#ffcd9b", "#a8cef9", "#d0ed7a"]
+      ]
+    });
+
+//    $.datepicker.setDefaults({
+//      showOn: "both",
+//      buttonImageOnly: true,
+//      buttonImage: "calendar.gif",
+//      buttonText: "Calendar"
+//    });
+
+    var task_button = $('.task-button');
+    var btn_create_temp = $('.btn_create_temp');
+
+    var btn_create_comm_category = $('.btn_create_comm_category');
+    var btn_create_month_category = $('.btn_create_month_category');
+    var btn_create_week_category = $('.btn_create_week_category');
+
+    var modal_temp_task_create = $('#temp_task_create');
+    var modal_comm_task_create = $('#comm_task_create');
+    var modal_month_task_create = $('#month_task_create');
+    var modal_week_task_create = $('#week_task_create');
+    var modal_cate_create = $('#cate_create');
+
+    var btn_save_temp_task_create = $('.save_temp_task_create');
+    var btn_save_comm_task_create = $('.save_comm_task_create');
+    var btn_save_month_task_create = $('.save_month_task_create');
+    var btn_save_week_task_create = $('.save_week_task_create');
+    var btn_save_cate_create = $('.save_cate_create');
+
+    var btn_create_month_task = $('.btn_create_month_task');
+    var btn_create_week_task = $('.btn_create_week_task');
+    var btn_create_comm_task = $('.btn_create_comm_task');
+
+    var temptaskTemplate = _.template($('#temptask_template').html());
+    var commtaskTemplate = _.template($('#commtask_template').html());
+//    var monthtaskTemplate = _.template($('#monthtask_template').html());
+    var weektaskTemplate = _.template($('#weektask_template').html());
+
+    var monthtasksTemplate = _.template($('#monthtasks_template').html());
+    var weektasksTemplate = _.template($('#weektasks_template').html());
+    var temptasksTemplate = _.template($('#temptasks_template').html());
+    var commtasksTemplate = _.template($('#commtasks_template').html());
+
+    var weekcateTemplate = _.template($('#week-cate-template').html());
+    var commcateTemplate = _.template($('#comm-cate-template').html());
+//    var monthcateTemplate = _.template($('#month-cate-template').html());
+
+    var $datepicker = $('.date-picker');
+    var $dateselect = $('.date-select');
+
+    task_button.on('click', function () {
+      var $this = $(this);
+      $this.css({
+                'background-color': 'white',
+                'outline': 'none'
+              }
+      )
+    });
+//
+//    btn_create_temp.on('click', function () {
+//      var $this = $(this);
+//      $this.css({
+//        'background-color': 'white',
+//        'outline': 'none'
+//      });
+//      modal_temp_task_create.modal('show');
+//      modal_temp_task_create.find('.content').val('');
+//      modal_temp_task_create.find('.visible-range').val('{{ TemporaryTask.PRIVATE }}');
+//      modal_temp_task_create.find('.scheduled_started_at').val('');
+//      modal_temp_task_create.find('.scheduled_finished_at').val('');
+//    });
+//
+//    btn_save_temp_task_create.on('click', function () {
+//      var content = modal_temp_task_create.find('.content').val();
+//      var visible_range = modal_temp_task_create.find('.visible_range:checked').val();
+//      var scheduled_started_at = modal_temp_task_create.find('.scheduled_started_at').val();
+//      var scheduled_finished_at = modal_temp_task_create.find('.scheduled_finished_at').val();
+//
+//      var year = $('.current_year').val();
+//      var month = $('.current_month').val();
+//      var day = $('.current_day').val();
+//
+//      $.post('/create_temptask', {
+//        'content': content,
+//        'visible_range': visible_range,
+//        'scheduled_started_at': scheduled_started_at,
+//        'scheduled_finished_at': scheduled_finished_at,
+//        'year': year,
+//        'month': month,
+//        'day': day
+//      }).success(function (data) {
+//        $(temptaskTemplate(data)).insertBefore($('.commtasks'));
+//      })
+//    });
+
+//    btn_create_comm_category.on('click', function () {
+//      var $this = $(this);
+//      var level = $this.attr('data-level');
+//      modal_cate_create.modal('show');
+//      modal_cate_create.find('.category').val('');
+//      modal_cate_create.find('.level').val(level);
+//    });
+//
+//    btn_create_comm_task.on('click', function () {
+//      var $this = $(this);
+//      var category_id = $this.attr('data-category_id');
+//      var category = $this.attr('data-category');
+//      var color = $this.attr('data-color');
+//
+//      modal_comm_task_create.modal('show');
+//      modal_comm_task_create.find('h4').html('新增' + category + '任务');
+//      modal_comm_task_create.find('.category_id').val(category_id);
+//      modal_comm_task_create.find('.color').val(color);
+//      modal_comm_task_create.find('.content').val('');
+//      modal_comm_task_create.find('.visible_range').prop('checked', false);
+//      modal_comm_task_create.find('.frequency').prop('checked', false);
+//      modal_comm_task_create.find('.scheduled_started_at').val('');
+//      modal_comm_task_create.find('.scheduled_finished_at').val('');
+//    });
+//
+//    btn_save_comm_task_create.on('click', function () {
+//      var category_id = modal_comm_task_create.find('.category_id').val();
+//      var color = modal_comm_task_create.find('.color').val();
+//      var content = modal_comm_task_create.find('.content').val();
+//      var visible_range = modal_comm_task_create.find('.visible_range').val();
+//      var frequency = modal_comm_task_create.find('.frequency').val();
+//      var scheduled_started_at = modal_comm_task_create.find('.scheduled_started_at').val();
+//      var scheduled_finished_at = modal_comm_task_create.find('.scheduled_finished_at').val();
+//
+//      var year = $('.current_year').val();
+//      var month = $('.current_month').val();
+//
+//      $.post('/create_commtask', {
+//        'category_id': category_id,
+//        'content': content,
+//        'visible_range': visible_range,
+//        'frequency': frequency,
+//        'scheduled_started_at': scheduled_started_at,
+//        'scheduled_finished_at': scheduled_finished_at,
+//        'year': year,
+//        'month': month
+//      }).success(function (data) {
+//
+//        data.color = color;
+//        if ($('.commcate' + category_id + ':has(div)').length == 0) {
+//          $('.commcate-' + category_id).append(commtaskTemplate(data));
+//        } else {
+//          $(commtaskTemplate(data)).insertAfter($('.commcate-' + category_id + '>div:last-child'));
+//        }
+//      })
+//    });
+
+//    btn_create_month_category.on('click', function () {
+//      var $this = $(this);
+//      var level = $this.attr('data-level');
+//      modal_cate_create.modal('show');
+//      modal_cate_create.find('.category').val('');
+//      modal_cate_create.find('.level').val(level);
+//    });
+
+//    btn_create_month_task.on('click', function () {
+//      var $this = $(this);
+//      var category_id = $this.attr('data-category_id');
+//      var category = $this.attr('data-category');
+//
+//      modal_month_task_create.modal('show');
+//      modal_month_task_create.find('h4').html('新增本月' + category + '任务');
+//      modal_month_task_create.find('.category_id').val(category_id);
+//
+//      modal_month_task_create.find('.content').val('');
+//      modal_month_task_create.find('.visible_range').prop('checked', false);
+//    });
+//
+//    btn_save_month_task_create.on('click', function () {
+//      var category_id = modal_month_task_create.find('.category_id').val();
+//      var content = modal_month_task_create.find('.content').val();
+//      var visible_range = modal_month_task_create.find('.visible_range:checked').val();
+//
+//      var year = $('.current_year').val();
+//      var month = $('.current_month').val();
+//
+//      $.post('/create_monthtask', {
+//        'category_id': category_id,
+//        'content': content,
+//        'visible_range': visible_range,
+//        'year': year,
+//        'month': month
+//      }).success(function (data) {
+//        $(monthtaskTemplate(data)).insertAfter($('.monthcate-' + category_id + '>div:last-child'))
+//      })
+//    });
+//
+//    btn_create_week_category.on('click', function () {
+//      var $this = $(this);
+//      var level = $this.attr('data-level');
+//      modal_cate_create.modal('show');
+//      modal_cate_create.find('.category').val('');
+//      modal_cate_create.find('.level').val(level);
+//    });
+//
+//    btn_create_week_task.on('click', function () {
+//      var $this = $(this);
+//      var category_id = $this.attr('data-category_id');
+//      var category = $this.attr('data-category');
+//
+//      modal_week_task_create.modal('show');
+//      modal_week_task_create.find('h4').html('新增本周' + category + '任务');
+//      modal_week_task_create.find('.content').val('');
+//      modal_week_task_create.find('.visible_range').prop('checked', false);
+//      modal_week_task_create.find('.category_id').val(category_id)
+//    });
+//
+//    btn_save_week_task_create.on('click', function () {
+//      var category_id = modal_week_task_create.find('.category_id').val();
+//      var content = modal_week_task_create.find('.content').val();
+//      var visible_range = modal_week_task_create.find('.visible_range:checked').val();
+//
+//      var year = $('.current_year').val();
+//      var month = $('.current_month').val();
+//      var week = $('.current_week').val();
+//
+//
+//      $.post('/create_weektask', {
+//        'category_id': category_id,
+//        'content': content,
+//        'visible_range': visible_range,
+//        'year': year,
+//        'month': month,
+//        'week': week
+//      }).success(function (data) {
+//        $(weektaskTemplate(data)).insertAfter($('.weekcate-' + category_id + '>div:last-child'))
+//      })
+//    });
+
+//    btn_save_cate_create.on('click', function () {
+//      var category = modal_cate_create.find('.category').val();
+//      var color = modal_cate_create.find('.color-picker').val();
+//      var level = modal_cate_create.find('.level').val();
+//
+//      $.post('/create_category', {
+//        'category': category,
+//        'color': color,
+//        'level': level
+//      }).success(function (data) {
+//        if (level == 2) {
+//          if ($('.week-task-block:has(div)').length == 0) {
+//            $('.week-task-block').append(weekcateTemplate(data));
+//          } else {
+//            $(weekcateTemplate(data)).insertAfter($('.week-task-block>div:last-child'));
+//          }
+//
+//          if ($('.commtasks:has(div)').length == 0) {
+//            $(commcateTemplate(data)).insertAfter($('.commtasks>h4'))
+//          } else {
+//            $(commcateTemplate(data)).insertAfter($('.commtasks>div:last-child'));
+//          }
+//        } else if (level == 1) {
+//          if ($('.month-task-block:has(div)').length == 0) {
+//            $('.month-task-block').append(monthcateTemplate(data));
+//          } else {
+//            $(monthcateTemplate(data)).insertAfter($('.month-task-block>div:last-child'));
+//          }
+//
+//          if ($('.week-task-block:has(div)').length == 0) {
+//            $('.week-task-block').append(weekcateTemplate(data));
+//          } else {
+//            $(weekcateTemplate(data)).insertAfter($('.week-task-block>div:last-child'));
+//          }
+//
+//          if ($('.commtasks:has(div)').length == 0) {
+//            $(commcateTemplate(data)).insertAfter($('.commtasks>h4'))
+//          } else {
+//            $(commcateTemplate(data)).insertAfter($('.commtasks>div:last-child'));
+//          }
+//        } else if (level == 3) {
+//          if ($('.commtasks:has(div)').length == 0) {
+//            $(commcateTemplate(data)).insertAfter($('.commtasks>h4'))
+//          } else {
+//            $(commcateTemplate(data)).insertAfter($('.commtasks>div:last-child'));
+//          }
+//        }
+//
+//        var btn_create_week_task = $('.btn_create_week_task');
+//        btn_create_week_task.on('click', function () {
+//          var $this = $(this);
+//          var category_id = $this.attr('data-category_id');
+//          var category = $this.attr('data-category');
+//
+//          modal_week_task_create.modal('show');
+//          modal_week_task_create.find('h4').html('新增本周' + category + '任务');
+//          modal_week_task_create.find('.category_id').val(category_id);
+//        });
+//
+//        var btn_create_comm_task = $('.btn_create_comm_task');
+//        btn_create_comm_task.on('click', function () {
+//          var $this = $(this);
+//          var category_id = $this.attr('data-category_id');
+//          var category = $this.attr('data-category');
+//          var color = $this.attr('data-color');
+//
+//          modal_comm_task_create.modal('show');
+//          modal_comm_task_create.find('h4').html('新增' + category + '常规任务');
+//          modal_comm_task_create.find('.category_id').val(category_id);
+//          modal_comm_task_create.find('.color').val(color);
+//          modal_comm_task_create.find('.content').val('');
+//          modal_comm_task_create.find('.visible_range').prop('checked', false);
+//          modal_comm_task_create.find('.frequency').prop('checked', false);
+//          modal_comm_task_create.find('.scheduled_started_at').val('');
+//          modal_comm_task_create.find('.scheduled_finished_at').val('');
+//        });
+//
+//        var btn_create_month_task = $('.btn_create_month_task');
+//        btn_create_month_task.on('click', function () {
+//          var $this = $(this);
+//          var category_id = $this.attr('data-category_id');
+//          var category = $this.attr('data-category');
+//          var color = $this.attr('data-color');
+//          modal_month_task_create.modal('show');
+//          modal_month_task_create.find('h4').html('新增本月' + category + '任务');
+//          modal_month_task_create.find('.category_id').val(category_id);
+//
+//          modal_month_task_create.find('.content').val('');
+//          modal_month_task_create.find('.visible_range').prop('checked', false);
+//        });
+//      })
+//    });
+
+//    $('.task-checkbox').change(function () {
+//      var $this = $(this);
+//      var status = $this.prop('checked');
+//      var monthtask_id = $this.closest('.row').find('.monthtask_id').val();
+//      var weektask_id = $this.closest('.row').find('.weektask_id').val();
+//      var temptask_id = $this.closest('.row').find('.temptask_id').val();
+//      var commtask_id = $this.closest('.row').find('.commtask_id').val();
+//
+//      var year = $('.current_year').val();
+//      var month = $('.current_month').val();
+//      var day = $('.current_day').val();
+//
+//      var data = {};
+//      if (monthtask_id) {
+//        data['task_id'] = monthtask_id;
+//        data['type'] = 'month'
+//      } else if (weektask_id) {
+//        data['task_id'] = weektask_id;
+//        data['type'] = 'week'
+//      } else if (temptask_id) {
+//        data['task_id'] = temptask_id;
+//        data['type'] = 'temp'
+//      } else if (commtask_id) {
+//        data['task_id'] = commtask_id;
+//        data['type'] = 'comm'
+//      }
+//      data['status'] = status;
+//      data['year'] = year;
+//      data['month'] = month;
+//      data['day'] = day;
+//
+//      $.ajax({
+//        url: '/taskdone',
+//        method: 'POST',
+//        data: data
+//      }).done(function (data) {
+//
+//      });
+//    });
+
+//    $dateselect.on('click', function () {
+//      $datepicker.datepicker({
+//        dateFormat: "yy-mm-dd"
+//      }).on('change', function() {
+//        var selected_date = $(this).val();
+//        var current_year = $('.current_year').val();
+//        var current_month = $('.current_month').val();
+//        var current_week = $('.current_week').val();
+//        var current_day = $('.current_day').val();
+//
+//        window.open(
+//                '/?selected_date='+selected_date,
+//                '_self');
+
+//        $.ajax( {
+//          url: '/',
+//          type: 'GET',
+//          async: false,
+//          data: {
+//            'selected_date': selected_date,
+//            'current_year': current_year,
+//            'current_month': current_month,
+//            'current_week': current_week,
+//            'current_day': current_day
+//          },
+//          context: document.body,
+//          dataType: 'html'
+//        }).success(function(data){
+//          var $html = $('html');
+//          var content = $($.parseHTML(data, document, true));
+//          $html.empty().append(content);
+//        });
+
+//                .success(function(data) {
+//          if (data.monthtasks) {
+//            $('.month-task-block').replaceWith($(monthtasksTemplate(data)));
+//          }
+//          if (data.weektasks) {
+//            $('.week-task-block').replaceWith($(weektasksTemplate(data)));
+//          }
+//          if (data.commtasks) {
+//            $('.commtasks_block').replaceWith($(commtasksTemplate(data)));
+////            $('.commtasks_block').replaceWith($(commtasksTemplate(
+////                    _.extend({commtaskTemplate: commtaskTemplate}, data)
+////            )))
+//          }
+//          if (data.temptasks) {
+//            $('.temptasks_block').replaceWith($(temptasksTemplate(data)))
+//          }
+//        });
+
+//        $(this).datepicker('hide');
+      })
+    });
+  });
+</script>
+{% end %}
