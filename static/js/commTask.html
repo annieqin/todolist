@@ -15,14 +15,14 @@
                     <%= content %>
         </a>
       </div>
-      <div class="col-xs-3">
+      <div class="col-xs-4">
         <% if (scheduled_started_at || scheduled_finished_at) { %>
         <span class="glyphicon glyphicon-time"></span>
         <% if (scheduled_started_at) { %><%= scheduled_started_at %><% } %>
         <% if (scheduled_finished_at) { %>- <%= scheduled_finished_at %><% } %>
         <% } %>
       </div>
-      <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+      <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
       <div class="col-xs-1"><span ng-click="delete_task('comm', <%= id %>)" class="glyphicon glyphicon-trash"></span></div>
     </div>
   </div>

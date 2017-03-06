@@ -676,7 +676,7 @@
         <% if (scheduled_finished_at) { %>- <%= scheduled_finished_at %><% } %>
         <% } %>
       </div>
-      <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+      <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
       <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
     </div>
   </div>
@@ -695,14 +695,14 @@
         <% } %>
       </div>
       <div class="col-xs-5 task-content-block"><%= content %></div>
-      <div class="col-xs-3">
+      <div class="col-xs-4">
         <% if (scheduled_started_at || scheduled_finished_at) { %>
         <span class="glyphicon glyphicon-time"></span>
         <% if (scheduled_started_at) { %><%= scheduled_started_at %><% } %>
         <% if (scheduled_finished_at) { %>- <%= scheduled_finished_at %><% } %>
         <% } %>
       </div>
-      <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+      <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
       <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
     </div>
   </div>
@@ -822,7 +822,7 @@
             <% } %>
           </div>
           <div class="col-xs-7 task-content-block"><%= w['content'] %></div>
-          <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+          <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
           <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
         </div>
       </div>
@@ -858,7 +858,7 @@
           <% } %>
           <% } %>
         </div>
-        <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+        <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
         <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
       </div>
     </div>
@@ -891,14 +891,14 @@
             <% } %>
           </div>
           <div class="col-xs-5 task-content-block"><%= i['content'] %></div>
-          <div class="col-xs-3">
+          <div class="col-xs-4">
             <% if (i['scheduled_started_at'] || i['scheduled_finished_at']) { %>
             <span class="glyphicon glyphicon-time"></span>
             <% if (i['scheduled_started_at']) { %><%= i['scheduled_started_at'] %><% } %>
             <% if (i['scheduled_finished_at']) { %>- <%= i['scheduled_finished_at'] %><% } %>
             <% } %>
           </div>
-          <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+          <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
           <div class="col-xs-1"><span class="glyphicon glyphicon-trash"></span></div>
         </div>
       </div>
