@@ -105,15 +105,15 @@
     width: 10%;
     min-width: 20px;
   }
-  .task-checkbox {
-    width: 20px;
-    height: 20px;
-    background-color: #faf8f6;
-    display: inline-block;
-    cursor: pointer;
-    margin-right: 20px;
-    box-shadow: inset 0 0 0 1px #ffffff;
-  }
+  /*.task-checkbox {*/
+    /*width: 20px;*/
+    /*height: 20px;*/
+    /*background-color: #faf8f6;*/
+    /*display: inline-block;*/
+    /*cursor: pointer;*/
+    /*margin-right: 20px;*/
+    /*box-shadow: inset 0 0 0 1px #ffffff;*/
+  /*}*/
   .task-content-block {
     margin: auto;
     text-align: left;
@@ -176,7 +176,7 @@
             </h4>
           </blockquote>
         </div>
-        <div class="panel panel-default" style="border-color: #c7ddef; height: 200px">
+        <div class="panel panel-default" style="border-color: #c7ddef; height: 205px">
           <div class="panel-body month-task-block">
             {% for c in categories %}
             {% if c.level == 1 %}
@@ -236,7 +236,7 @@
             <h4 class="heading-h4">Week Task</h4>
           </blockquote>
         </div>
-        <div class="panel panel-default" style="border-color: #c7ddef; height: 200px">
+        <div class="panel panel-default" style="border-color: #c7ddef; height: 205px">
           <div class="panel-body week-task-block" >
             {% for c in categories %}
             {% if c.level in [1, 2] %}
