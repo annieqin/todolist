@@ -136,6 +136,17 @@
     cursor: pointer;
 
   }
+  .panel-default{
+    border-color: #c7ddef;
+    height: 205px;
+    overflow-y:scroll;
+  }
+  .task-block{
+    /*margin-bottom: 5px;*/
+  }
+  .monthweek-cate-panel{
+    margin-top: 20px;
+  }
 </style>
 {% end %}
 
@@ -176,11 +187,11 @@
             </h4>
           </blockquote>
         </div>
-        <div class="panel panel-default" style="border-color: #c7ddef; height: 205px">
+        <div class="panel panel-default">
           <div class="panel-body month-task-block">
             {% for c in categories %}
             {% if c.level == 1 %}
-            <div class="monthcate-{{ c.id }}">
+            <div class="monthcate-{{ c.id }} monthweek-cate-panel">
               <div style="color: {{c.color}}">
                 <div class="row month-week-cate-heading">
                   <div class="col-xs-1"><li class="month-cate-heading-li" style="color: {{c.color}}"></li></div>
@@ -204,14 +215,14 @@
                     <input type="checkbox" class="task-checkbox" ng-model="confirmed.month{{m['id']}}" ng-change="taskdone({{ m['id'] }}, 'month')">
                     {% end %}
                   </div>
-                  <div class="col-xs-7 task-content-block">
+                  <div class="col-xs-9 task-content-block">
                     <a href="#" editable-text="monthtasks[{{m['id']}}].content"
                      onbeforesave="edit_task_content($data, 'month', {{m['id']}})"
                      monthtaskcontent="{{m['id']}}">
                     {{ m['content'] }}
                     </a>
                   </div>
-                  <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+                  <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
                   <div class="col-xs-1">
                     <span ng-click="delete_task('month', {{m['id']}})" class="glyphicon glyphicon-trash" style="cursor: pointer">
                     </span>
@@ -236,11 +247,11 @@
             <h4 class="heading-h4">Week Task</h4>
           </blockquote>
         </div>
-        <div class="panel panel-default" style="border-color: #c7ddef; height: 205px">
+        <div class="panel panel-default">
           <div class="panel-body week-task-block" >
             {% for c in categories %}
             {% if c.level in [1, 2] %}
-            <div class="weekcate-{{ c.id }}">
+            <div class="weekcate-{{ c.id }} monthweek-cate-panel">
               <div style="color: {{c.color}};">
                 <div class="row month-week-cate-heading">
                   <div class="col-xs-1"><li style="color: {{c.color}};" class="month-cate-heading-li"></li></div>
@@ -264,14 +275,14 @@
                     <input type="checkbox" class="task-checkbox" ng-model="confirmed.week{{w['id']}}" ng-change="taskdone({{ w['id'] }}, 'week')">
                     {% end %}
                   </div>
-                  <div class="col-xs-7 task-content-block">
+                  <div class="col-xs-9 task-content-block">
                     <a href="#" editable-text="weektasks[{{w['id']}}].content"
                      onbeforesave="edit_task_content($data, 'week', {{w['id']}})"
                      weektaskcontent="{{w['id']}}">
                     {{w['content']}}
                   </a>
                   </div>
-                  <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+                  <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
                   <div class="col-xs-1">
                     <span ng-click="delete_task('week', {{w['id']}})" class="glyphicon glyphicon-trash" style="cursor: pointer">
                     </span>
@@ -379,7 +390,7 @@
                     {{c['content']}}
                   </a>
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-4">
                   {% if c['scheduled_started_at'] or c['scheduled_finished_at'] %}
                   <span class="glyphicon glyphicon-time"></span>
                   {% if c['scheduled_started_at'] %}
@@ -390,7 +401,7 @@
                   {% end %}
                   {% end %}
                 </div>
-                <div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>
+                <!--<div class="col-xs-1"><span class="glyphicon glyphicon-edit"></span></div>-->
                 <div class="col-xs-1">
                   <span ng-click="delete_task('comm', {{c['id']}})" class="glyphicon glyphicon-trash" style="cursor: pointer">
                   </span>
