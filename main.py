@@ -642,5 +642,6 @@ application = Application([
 ], **settings)
 
 if __name__ == '__main__':
-    application.listen(8000)
-    tornado.ioloop.IOLoop.current().start()
+    while True:
+        application.listen(8000)
+        tornado.ioloop.IOLoop.current().start()
