@@ -94,7 +94,10 @@ class CommonTask(BaseModel):
             TaskRecord.commontask_id == self.id
         ).scheduled_started_at
 
-        return time_to_string(data.second) if data or data == datetime.timedelta(0) else ''
+        time = datetime.datetime(100, 1, 1, data.hour, data.minute, data.second)
+        seconds = (time - time.replace(hour=0, minute=0, second=0, microsecond=0)).seconds
+
+        return time_to_string(seconds) if data or data == datetime.timedelta(0) else ''
 
     @property
     def scheduled_finished_at(self):
@@ -102,7 +105,9 @@ class CommonTask(BaseModel):
             TaskRecord.commontask_id == self.id
         ).scheduled_finished_at
 
-        return time_to_string(data.second) if data or data == datetime.timedelta(0) else ''
+        time = datetime.datetime(100, 1, 1, data.hour, data.minute, data.second)
+        seconds = (time - time.replace(hour=0, minute=0, second=0, microsecond=0)).seconds
+        return time_to_string(seconds) if data or data == datetime.timedelta(0) else ''
 
 
 class TemporaryTask(BaseModel):

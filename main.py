@@ -57,9 +57,7 @@ class MainHandler(BaseHandler):
         selected_day = None
         selected_weekday = None
         selected_week = None
-
         try:
-
             selected_date = self.get_argument('selected_date')
 
             selected_date = datetime.datetime.fromtimestamp(float(selected_date) / 1000.0)
@@ -127,7 +125,6 @@ class MainHandler(BaseHandler):
                 'monthtasks_json': monthtasks_json,
                 'weektasks_json': weektasks_json
             }
-
             self.render('home.html', **data)
         else:
             date = datetime.datetime.now()

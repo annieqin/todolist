@@ -58,11 +58,12 @@ def get_weektasks_query(user_id, year, month_num, week_num):
 def get_commtasks_json(user_id, date, year, month_num):
     commtasks_dict = {}
     commtasks_query = get_commtasks_query(user_id, date)
-    for c in commtasks_query:
-        commtasks_dict[c.id] = {
-            'content': c.content,
-            'scheduled_started_at': c.scheduled_started_at,
-            'scheduled_finished_at': c.scheduled_finished_at
+
+    for com in commtasks_query:
+        commtasks_dict[com.id] = {
+            'content': com.content,
+            'scheduled_started_at': com.scheduled_started_at,
+            'scheduled_finished_at': com.scheduled_finished_at
         }
     commtasks_json = json.dumps(commtasks_dict, ensure_ascii=False)
 
