@@ -61,8 +61,8 @@ class CommonTask(BaseModel):
     content = CharField(max_length=36, default='')
     visible_range = IntegerField(choices=VISIBLE_RANGE_CHOICES, default=PRIVATE)
 
-    started_date = DateField(formats=['%Y-%m-%d'])
-    finished_date = DateField(formats=['%Y-%m-%d'])
+    started_date = DateField(formats=['%Y-%m-%d'], null=True)
+    finished_date = DateField(formats=['%Y-%m-%d'], null=True)
 
     @property
     def category(self):
@@ -90,6 +90,7 @@ class CommonTask(BaseModel):
 
     @property
     def scheduled_started_at(self):
+
         data = TaskRecord.get(
             TaskRecord.commontask_id == self.id
         ).scheduled_started_at

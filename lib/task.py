@@ -20,10 +20,11 @@ class DefaultListOrderedDict(OrderedDict):
 
 def get_commtasks_query(user_id, date):
     commtasks_query = CommonTask.select().where(
-        CommonTask.user_id == user_id,
-        CommonTask.started_date <= date,
-        CommonTask.finished_date >= date,
-        CommonTask.status != CommonTask.DELETED)
+        (CommonTask.user_id == user_id) &
+        (CommonTask.started_date <= date) &
+        (CommonTask.finished_date >= date) &
+        (CommonTask.status != CommonTask.DELETED)
+    )
     return commtasks_query
 
 

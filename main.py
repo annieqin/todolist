@@ -191,8 +191,58 @@ class RegisterHandler(RequestHandler):
         username = self.get_argument('username')
         pwd = self.get_argument('pwd')
         pwd_confirm = self.get_argument('pwd_confirm')
+        date = datetime.datetime.now().date()
+        to_date = date+datetime.timedelta(365)
         if pwd == pwd_confirm:
-            User.create(username=username, pwd=pwd)
+            user = User.create(username=username, pwd=pwd)
+            c_study = Category.create(user_id=user.id, content='学习',
+                                      color='#ffe9e9', level=1, status=1)
+            c_reading = Category.create(user_id=user.id, content='读书',
+                                        color='#edffde', level=1, status=1)
+            c_thinking = Category.create(user_id=user.id, content='思考',
+                                         color='#fbe4d6', level=1, status=1)
+            c_sports = Category.create(user_id=user.id, content='运动',
+                                       color='#e2fbfd', level=1, status=1)
+            c_shopping = Category.create(user_id=user.id, content='购物',
+                                         color='#ffeed4', level=1, status=1)
+
+            t_study = CommonTask.create(user_id=user.id, category_id=c_study.id,
+                                        status=1, content='打卡今日学习任务...',
+                                        visible_range=1, started_date=date, finished_date=to_date)
+            t_reading = CommonTask.create(user_id=user.id, category_id=c_reading.id,
+                                          status=1, content='打卡今日阅读任务...',
+                                          visible_range=1, started_date=date, finished_date=to_date)
+            t_thinking = CommonTask.create(user_id=user.id, category_id=c_thinking.id,
+                                           status=1, content='打卡今日思考任务...',
+                                           visible_range=1, started_date=date, finished_date=to_date)
+            t_sports = CommonTask.create(user_id=user.id, category_id=c_sports.id,
+                                         status=1, content='打卡今日运动任务...',
+                                         visible_range=1, started_date=date, finished_date=to_date)
+            t_shopping = CommonTask.create(user_id=user.id, category_id=c_shopping.id,
+                                           status=1, content='打卡今日购物任务...',
+                                           visible_range=1, started_date=date, finished_date=to_date)
+            CommonTaskFrequency.create(commontask_id=t_study.id, frequency=0)
+            CommonTaskFrequency.create(commontask_id=t_reading.id, frequency=0)
+            CommonTaskFrequency.create(commontask_id=t_thinking.id, frequency=0)
+            CommonTaskFrequency.create(commontask_id=t_sports.id, frequency=0)
+            CommonTaskFrequency.create(commontask_id=t_shopping.id, frequency=0)
+
+            for i in range(1, 8):
+                TaskRecord.create(user_id=user.id, commontask_id=t_study.id,
+                                  weekday=i, date=date)
+            for i in range(1, 8):
+                TaskRecord.create(user_id=user.id, commontask_id=t_reading.id,
+                                  weekday=i, date=date)
+            for i in range(1, 8):
+                TaskRecord.create(user_id=user.id, commontask_id=t_thinking.id,
+                                  weekday=i, date=date)
+            for i in range(1, 8):
+                TaskRecord.create(user_id=user.id, commontask_id=t_sports.id,
+                                  weekday=i, date=date)
+            for i in range(1, 8):
+                TaskRecord.create(user_id=user.id, commontask_id=t_shopping.id,
+                                  weekday=i, date=date)
+
             self.redirect('/')
         else:
             self.redirect('/register')
